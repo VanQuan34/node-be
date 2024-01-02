@@ -16,11 +16,19 @@ function authorize() {
 
             // check user still exists
             if (!user)
-                return res.status(401).json({ message: 'Unauthorized' });
+                return res.status(401).json(responseApi(401, '', 'Unauthorized'));
 
             // authorization successful
             req.user = user.get();
             next();
         }
     ];
+}
+
+function responseApi(code, data, message){
+    return {
+        code: code,
+        data: data,
+        message: message
+    }
 }
