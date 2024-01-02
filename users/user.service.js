@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
-
+const uid = require('uid');
 module.exports = {
     authenticate,
     getAll,
@@ -45,6 +45,7 @@ async function create(params) {
     if (params.password) {
         params.hash = await bcrypt.hash(params.password, 10);
     }
+    params['user_id'] = uid.uid(16)
 
     // save user
     await db.User.create(params);
@@ -82,7 +83,8 @@ async function _delete(id) {
 // helper functions
 
 async function getUser(id) {
-    const user = await db.User.findByPk(id);
+    // const user = await db.User.findByPk(id);
+    const user = await db.User.findOne({ where: { user_id: id } });
     if (!user) throw 'User not found';
     return user
 }

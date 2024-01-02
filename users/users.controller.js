@@ -4,7 +4,6 @@ const Joi = require('joi');
 const validateRequest = require('_middleware/validate-request');
 const authorize = require('_middleware/authorize')
 const userService = require('./user.service');
-
 // routes
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
@@ -35,7 +34,11 @@ function registerSchema(req, res, next) {
         firstName: Joi.string().required(),
         lastName: Joi.string().required(),
         username: Joi.string().required(),
-        password: Joi.string().min(6).required()
+        password: Joi.string().min(6).required(),
+        role: Joi.string().required(),
+        department: Joi.string().required(),
+        email: Joi.string().required(),
+        status: Joi.boolean().required(),
     });
     validateRequest(req, next, schema);
 }
@@ -80,7 +83,12 @@ function updateSchema(req, res, next) {
 
 function update(req, res, next) {
     userService.update(req.params.id, req.body)
-        .then(user => res.json(user))
+        .then(user => res.json({
+                code: 200,
+                data: user,
+                message: 'Update successful'
+            })
+            )
         .catch(next);
 }
 
