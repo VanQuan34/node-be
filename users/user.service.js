@@ -20,16 +20,29 @@ async function authenticate({ username, password }) {
 
     // authentication successful
     const token = jwt.sign({ sub: user.id }, config.secret, { expiresIn: '1d' });
-    return { ...omitHash(user.get()), token };
+    const data = { ...omitHash(user.get()), token };
+    return {
+        code: 200,
+        data: data,
+        message: 'Xác thực thành công'
+    }
 }
 
 async function getAll() {
     return {
         code: 200,
-        data: await db.User.findAll(),
+        data: await db.User.findAll({
+            order: [['createdAt', 'DESC']], // Order by createdAt in descending order
+          }),
         message: 'Request success'
     }
 }
+
+// {
+//     order: [['createdAt', 'DESC']], // Order by createdAt in descending order
+//     offset: 2,
+//     limit: 2,
+//   }
 
 async function getById(id) {
     return await getUser(id);
