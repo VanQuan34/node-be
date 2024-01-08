@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
 const uid = require('uid');
+const { cloneDeep } = require('lodash');
 module.exports = {
     authenticate,
     getAll,
@@ -19,7 +20,9 @@ async function authenticate({ username, password }) {
         throw 'Username or password is incorrect';
 
     // authentication successful
-    const token = jwt.sign({ sub: user.id }, config.secret, { expiresIn: '1d' });
+    const newUser = cloneDeep(user);
+    newUser['hash'] = undefined;
+    const token = jwt.sign({ sub: newUser }, config.secret, { expiresIn: '1d' });
     const data = { ...omitHash(user.get()), token };
     return {
         code: 200,
