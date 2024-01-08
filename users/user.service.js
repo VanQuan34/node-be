@@ -22,7 +22,6 @@ async function authenticate({ username, password }) {
     // authentication successful
     const newUser = cloneDeep(user);
     newUser['hash'] = undefined;
-    newUser['id'] = undefined;
     const token = jwt.sign({ sub: newUser }, config.secret, { expiresIn: '1d' });
     const data = { ...omitHash(user.get()), token };
     return {
