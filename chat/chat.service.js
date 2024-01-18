@@ -36,7 +36,7 @@ async function getAll(page) {
     //     message: 'Request success'
     // }
     try {
-        const limit = 3;
+        const limit = 15;
         const chatData = await db.Chat.findAll({
           include: [{
             model: db.User,
