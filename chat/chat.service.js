@@ -40,7 +40,10 @@ async function getAll() {
           include: [{
             model: db.User,
             attributes: ['firstName', 'lastName', 'username', 'email', 'role', 'department', 'status'],
-            where: { user_id: Sequelize.col('Chat.user_id') } // Assuming there is a foreign key relationship
+            on: {
+                col1: Sequelize.literal('`Chat`.`user_id`'),
+                col2: Sequelize.literal('`User`.`user_id`')
+              }
           }],
         });
 
