@@ -36,6 +36,7 @@ async function getAll(page) {
     //     message: 'Request success'
     // }
     try {
+        const limit = 3;
         const chatData = await db.Chat.findAll({
           include: [{
             model: db.User,
@@ -45,8 +46,8 @@ async function getAll(page) {
           order: [
             ['createdAt', 'ASC'] // Order by the specified column and direction
           ],
-          limit: 15,
-          offset: parseInt(page)
+          limit: limit,
+          offset: parseInt(page - 1) * limit
         });
 
         const formattedChatData = chatData.map(chat => {
