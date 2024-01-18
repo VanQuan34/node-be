@@ -25,6 +25,6 @@ function model(sequelize) {
             withHash: { attributes: {}, }
         }
     };
-
-    return sequelize.define('User', attributes, options);
+    const User = sequelize.define('User', attributes, options);
+    return User;
 }

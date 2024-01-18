@@ -39,11 +39,8 @@ async function getAll() {
         const chatData = await db.Chat.findAll({
           include: [{
             model: db.User,
-            attributes: ['firstName', 'lastName', 'username', 'email', 'role', 'department', 'status'],
-            on: {
-                col1: Sequelize.literal('`Chat`.`user_id`'),
-                col2: Sequelize.literal('`User`.`user_id`')
-              }
+            attributes: ['firstName', 'lastName', 'username', 'user_id', 'email', 'role', 'department', 'status'],
+            // where: { user_id: Sequelize.col('Chat.user_id') }
           }],
         });
 
@@ -62,7 +59,7 @@ async function getAll() {
         return {
           code: 200,
           data: [],
-          message: 'Request success'
+          message: 'Request success er'
         };
       }
 }
