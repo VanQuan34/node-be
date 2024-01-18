@@ -1,10 +1,10 @@
 ﻿{
     "database": {
-        "host": "localhost",
-        "port": 3306,
+        "host": "monorail.proxy.rlwy.net",
+        "port": 30366,
         "user": "root",
-        "password": "",
-        "database": "be-sql"
+        "password": "f1434C4HC31ea5fBECbEHGGh11B5Dc5c",
+        "database": "railway"
     },
     "secret": "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING"
 }
