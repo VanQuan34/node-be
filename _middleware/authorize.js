@@ -12,8 +12,8 @@ function authorize() {
         // attach full user record to request object
         async (req, res, next) => {
             // get user with id from token 'sub' (subject) property
-            const user = await db.User.findByPk(req.user.sub);
-
+            const user = await db.User.findByPk(req.user.sub.id);
+            // const user = await db.User.findOne({ where: { user_id: req.user.sub.user_id } });
             // check user still exists
             if (!user)
                 return res.status(401).json(responseApi(401, '', 'Unauthorized'));

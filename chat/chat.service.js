@@ -3,7 +3,11 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
 const uid = require('uid');
+const { Sequelize } = require('sequelize');
+const { User } = require('../users/user.model'); // Adjust the path accordingly
+const { Chat } = require('../chat/chat.model'); // Adjust the path accordingly
 const { cloneDeep } = require('lodash');
+
 module.exports = {
     authenticate,
     getAll,
@@ -15,58 +19,63 @@ module.exports = {
 
 async function authenticate({ username, password }) {
     const user = await db.User.scope('withHash').findOne({ where: { username } });
+    const newUser = cloneDeep(user);
+    newUser['hash'] = undefined;
 
     if (!user || !(await bcrypt.compare(password, user.hash)))
         throw 'Username or password is incorrect';
-
     // authentication successful
-    const newUser = cloneDeep(user);
-    newUser['hash'] = undefined;
     const token = jwt.sign({ sub: newUser }, config.secret, { expiresIn: '1d' });
-    const data = { ...omitHash(user.get()), token };
-    return {
-        code: 200,
-        data: data,
-        message: 'Xác thực thành công'
-    }
+    return { ...omitHash(user.get()), token };
 }
 
 async function getAll() {
-    return {
-        code: 200,
-        data: await db.User.findAll({
-            order: [['createdAt', 'DESC']], // Order by createdAt in descending order
-          }),
-        message: 'Request success'
-    }
-}
+    // return {
+    //     code: 200,
+    //     data: await db.Chat.findAll(),
+    //     message: 'Request success'
+    // }
+    try {
+        const chatData = await db.Chat.findAll({
+          include: [{
+            model: db.User,
+            attributes: ['firstName', 'lastName', 'username', 'email', 'role', 'department', 'status'],
+            where: { user_id: Sequelize.col('Chat.user_id') } // Assuming there is a foreign key relationship
+          }],
+        });
 
-// {
-//     order: [['createdAt', 'DESC']], // Order by createdAt in descending order
-//     offset: 2,
-//     limit: 2,
-//   }
+        const formattedChatData = chatData.map(chat => {
+            const { User, ...rest } = chat.toJSON();
+            return { user: User, ...rest };
+        });
+        
+        return {
+          code: 200,
+          data: formattedChatData,
+          message: 'Request success'
+        };
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        return {
+          code: 200,
+          data: [],
+          message: 'Request success'
+        };
+      }
+}
 
 async function getById(id) {
     return await getUser(id);
 }
 
 async function create(params) {
-    // validate
-    if (await db.User.findOne({ where: { username: params.username } })) {
-        throw 'Username "' + params.username + '" is already taken';
+    const paramDefault = {
+        room_id: '1223334444',
+        user_id: '',
+        message: '',
     }
-
-    // hash password
-    if (params.password) {
-        params.hash = await bcrypt.hash(params.password, 10);
-    }
-    params['user_id'] = uid.uid(16)
-
     // save user
-    await db.User.create(params);
-    delete params.password;
-    delete params.hash;
+    await db.Chat.create(params);
     return params;
 }
 
