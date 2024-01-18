@@ -51,7 +51,8 @@ function register(req, res, next) {
 }
 
 function getAll(req, res, next) {
-    chatService.getAll()
+    const perPage = req.query.page || 0;
+    chatService.getAll(perPage)
         .then(chats => res.json(chats))
         .catch(next);
 }

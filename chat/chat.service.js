@@ -29,7 +29,7 @@ async function authenticate({ username, password }) {
     return { ...omitHash(user.get()), token };
 }
 
-async function getAll() {
+async function getAll(page) {
     // return {
     //     code: 200,
     //     data: await db.Chat.findAll(),
@@ -42,6 +42,11 @@ async function getAll() {
             attributes: ['firstName', 'lastName', 'username', 'user_id', 'email', 'role', 'department', 'status'],
             // where: { user_id: Sequelize.col('Chat.user_id') }
           }],
+          order: [
+            ['createdAt', 'ASC'] // Order by the specified column and direction
+          ],
+          limit: 15,
+          offset: parseInt(page)
         });
 
         const formattedChatData = chatData.map(chat => {
