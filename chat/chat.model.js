@@ -22,5 +22,6 @@ function model(sequelize) {
 
     const Chat = sequelize.define('Chat', attributes, options);
     Chat.belongsTo(db.User, { foreignKey: 'user_id' });
+    // Chat.belongsTo(db.User, { foreignKey: 'user_id', targetKey: 'user_id' });
     return Chat;
 }
