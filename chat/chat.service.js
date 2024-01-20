@@ -12,6 +12,7 @@ module.exports = {
     authenticate,
     getAll,
     getById,
+    getByRoom,
     create,
     update,
     delete: _delete
@@ -74,6 +75,10 @@ async function getById(id) {
     return await getUser(id);
 }
 
+async function getByRoom(id) {
+    return await getChatByRoom(id);
+}
+
 async function create(params) {
     const paramDefault = {
         room_id: '1223334444',
@@ -118,6 +123,12 @@ async function getUser(id) {
     const user = await db.User.findOne({ where: { user_id: id } });
     if (!user) throw 'User not found';
     return user
+}
+
+async function getChatByRoom(room_id){
+    const list = await db.User.findOne({ where: { room_id: room_id } });
+    if (!list) throw 'User not found';
+    return list;
 }
 
 function omitHash(user) {
