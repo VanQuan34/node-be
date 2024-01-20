@@ -75,8 +75,8 @@ async function getById(id) {
     return await getUser(id);
 }
 
-async function getByRoom(id) {
-    return await getChatByRoom(id);
+async function getByRoom(id, page) {
+    return await getChatByRoom(id, page);
 }
 
 async function create(params) {
@@ -125,10 +125,43 @@ async function getUser(id) {
     return user
 }
 
-async function getChatByRoom(room_id){
-    const list = await db.Chat.findAll({ where: { room_id: room_id } });
-    if (!list) throw 'Chat not found';
-    return list;
+async function getChatByRoom(room_id, page){
+    // const list = await db.Chat.findAll({ where: { room_id: room_id } });
+    // if (!list) throw 'Chat not found';
+    // return list;
+    try {
+        const limit = 15;
+        const chatData = await db.Chat.findAll({
+          include: [{
+            model: db.User,
+            attributes: ['firstName', 'lastName', 'username', 'user_id', 'email', 'role', 'department', 'status'],
+          }],
+          order: [
+            ['createdAt', 'DESC'] // Order by the specified column and direction
+          ],
+          where: { room_id: room_id },
+          limit: limit,
+          offset: parseInt(page - 1) * limit
+        });
+
+        const formattedChatData = chatData.map(chat => {
+            const { User, ...rest } = chat.toJSON();
+            return { user: User, ...rest };
+        });
+        
+        return {
+          code: 200,
+          data: formattedChatData,
+          message: 'Request success'
+        };
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        return {
+          code: 200,
+          data: [],
+          message: 'Request success er'
+        };
+      }
 }
 
 function omitHash(user) {

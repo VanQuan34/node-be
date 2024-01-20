@@ -62,7 +62,8 @@ function getCurrent(req, res, next) {
 }
 
 function getById(req, res, next) {
-    chatService.getByRoom(req.params.id)
+    const page = req.query.page || 0;
+    chatService.getByRoom(req.params.id, page)
         .then(user => res.json(user))
         .catch(next);
 }
