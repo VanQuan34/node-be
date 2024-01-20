@@ -44,7 +44,7 @@ async function getAll(page) {
             // where: { user_id: Sequelize.col('Chat.user_id') }
           }],
           order: [
-            ['createdAt', 'ASC'] // Order by the specified column and direction
+            ['createdAt', 'DESC'] // Order by the specified column and direction
           ],
           limit: limit,
           offset: parseInt(page - 1) * limit
