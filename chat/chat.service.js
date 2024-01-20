@@ -126,8 +126,8 @@ async function getUser(id) {
 }
 
 async function getChatByRoom(room_id){
-    const list = await db.User.findOne({ where: { room_id: room_id } });
-    if (!list) throw 'User not found';
+    const list = await db.Chat.findOne({ where: { room_id: room_id } });
+    if (!list) throw 'Chat not found';
     return list;
 }
 
