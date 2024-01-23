@@ -30,6 +30,7 @@ async function initialize() {
     db.User = require('../users/user.model')(sequelize);
     db.Chat = require('../chat/chat.model')(sequelize);
     db.Note = require('../note/note.model')(sequelize);
+    db.Category = require('../category/category.model')(sequelize);
 
     // sync all models with database
     await sequelize.sync();
