@@ -1,15 +1,15 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
 const validateRequest = require('_middleware/validate-request');
 const authorize = require('_middleware/authorize')
-const userService = require('./user.service');
+const noteService = require('./note.service');
 // routes
 router.post('/authenticate', authenticateSchema, authenticate);
-router.post('/register', registerSchema, register);
+router.post('/create', authorize(), createSchema, create);
 router.get('/', authorize(), getAll);
 router.get('/current', authorize(), getCurrent);
-router.get('/:id', authorize(), getById);
+router.get('/category/:category_id', authorize(), getById);
 router.put('/:id', authorize(), updateSchema, update);
 router.delete('/:id', authorize(), _delete);
 
@@ -24,46 +24,36 @@ function authenticateSchema(req, res, next) {
 }
 
 function authenticate(req, res, next) {
-    userService.authenticate(req.body)
+    noteService.authenticate(req.body)
         .then(user => res.json(user))
         .catch(next);
 }
 
-function registerSchema(req, res, next) {
+function createSchema(req, res, next) {
     const schema = Joi.object({
-        firstName: Joi.string().required(),
-        lastName: Joi.string().required(),
-        username: Joi.string().min(5).max(25).required(),
-        password: Joi.string().min(6).max(25).required().custom((value, helpers) => {
-            if (value.includes(' ')) {
-                return helpers.error('string.noSpaces');
-            }
-            return value;
-        }, 'no spaces allowed'),
-        role: Joi.string().required(),
-        department: Joi.string().required(),
-        email: Joi.string().required(),
-        status: Joi.boolean().required(),
-    }).messages({
-        'string.noSpaces': 'Password cannot contain spaces'
+        note_id: Joi.string().required(),
+        content: Joi.string(),
+        user_id: Joi.string().required(),
+        category_id: Joi.string().required(),
     });
     validateRequest(req, next, schema);
 }
 
-function register(req, res, next) {
-    userService.create(req.body)
+function create(req, res, next) {
+    noteService.create(req.body)
         .then((data) => res.json(
             {
                 code: 200,
                 data: data,
-                message: 'Registration successful'
+                message: 'Created note successful'
             }
             ))
         .catch(next);
 }
 
 function getAll(req, res, next) {
-    userService.getAll()
+  console.log('vao day')
+    noteService.getAll()
         .then(users => res.json(users))
         .catch(next);
 }
@@ -73,8 +63,9 @@ function getCurrent(req, res, next) {
 }
 
 function getById(req, res, next) {
-    userService.getById(req.params.id)
-        .then(user => res.json(user))
+  console.log('req.params.category_id=', req.params.category_id);
+    noteService.getById(req.params.category_id)
+        .then(note => res.json(note))
         .catch(next);
 }
 
@@ -89,7 +80,7 @@ function updateSchema(req, res, next) {
 }
 
 function update(req, res, next) {
-    userService.update(req.params.id, req.body)
+    noteService.update(req.params.id, req.body)
         .then(user => res.json({
                 code: 200,
                 data: user,
@@ -100,7 +91,7 @@ function update(req, res, next) {
 }
 
 function _delete(req, res, next) {
-    userService.delete(req.params.id)
+    noteService.delete(req.params.id)
         .then(() => res.json({ message: 'User deleted successfully' }))
         .catch(next);
 }

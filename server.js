@@ -12,6 +12,7 @@ app.use(cors());
 // api routes
 app.use('/users', require('./users/users.controller'));
 app.use('/chats', require('./chat/chat.controller'));
+app.use('/notes', require('./note/note.controller'));
 
 // global error handler
 app.use(errorHandler);
