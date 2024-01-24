@@ -9,6 +9,7 @@ router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/create', authorize(), createSchema, create);
 router.get('/', authorize(), getAll);
 router.get('/current', authorize(), getCurrent);
+router.get('/details/:note_id', authorize(), getDetailById);
 router.get('/category/:category_id', authorize(), getById);
 router.put('/:id', authorize(), updateSchema, update);
 router.delete('/:id', authorize(), _delete);
@@ -68,6 +69,12 @@ function getById(req, res, next) {
         .then(note => res.json(note))
         .catch(next);
 }
+
+function getDetailById(req, res, next){
+      noteService.getDetailsById(req.params.note_id)
+          .then(note => res.json(note))
+          .catch(next);
+  }
 
 function updateSchema(req, res, next) {
     const schema = Joi.object({

@@ -8,6 +8,7 @@ module.exports = {
     authenticate,
     getAll,
     getById,
+    getDetailsById,
     create,
     update,
     delete: _delete
@@ -51,6 +52,10 @@ async function getById(id) {
     return await getNote(id);
 }
 
+async function getDetailsById(id) {
+    return await getDetailsNote(id);
+}
+
 async function create(params) {
     await db.Note.create(params);
     return params;
@@ -87,6 +92,23 @@ async function _delete(id) {
 async function getNote(id) {
     // const note = await db.User.findByPk(id);
     const note = await db.Note.findAll({ where: { category_id: id } });
+    if (!note){
+      return {
+        code : 200,
+        data: [],
+        message: 'Request success'
+      }
+    }
+    return {
+      code : 200,
+      data: note,
+      message: 'Request success'
+    }
+}
+
+async function getDetailsNote(id) {
+    // const note = await db.User.findByPk(id);
+    const note = await db.Note.findAll({ where: { note_id: id } });
     if (!note){
       return {
         code : 200,

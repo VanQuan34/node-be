@@ -33,12 +33,19 @@ function registerSchema(req, res, next) {
     const schema = Joi.object({
         firstName: Joi.string().required(),
         lastName: Joi.string().required(),
-        username: Joi.string().required(),
-        password: Joi.string().min(6).required(),
+        username: Joi.string().min(5).max(25).required(),
+        password: Joi.string().min(6).max(25).required().custom((value, helpers) => {
+            if (value.includes(' ')) {
+                return helpers.error('string.noSpaces');
+            }
+            return value;
+        }, 'no spaces allowed'),
         role: Joi.string().required(),
         department: Joi.string().required(),
         email: Joi.string().required(),
         status: Joi.boolean().required(),
+    }).messages({
+        'string.noSpaces': 'Password cannot contain spaces'
     });
     validateRequest(req, next, schema);
 }
