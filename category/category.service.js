@@ -1,11 +1,7 @@
-const config = require('config.json');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
 const uid = require('uid');
-const { cloneDeep } = require('lodash');
 module.exports = {
-    authenticate,
     getAll,
     getById,
     create,
@@ -13,29 +9,13 @@ module.exports = {
     delete: _delete
 };
 
-async function authenticate({ username, password }) {
-    const user = await db.User.scope('withHash').findOne({ where: { username } });
-
-    if (!user || !(await bcrypt.compare(password, user.hash)))
-        throw 'Username or password is incorrect';
-
-    // authentication successful
-    const newUser = cloneDeep(user);
-    newUser['hash'] = undefined;
-    const token = jwt.sign({ sub: newUser }, config.secret, { expiresIn: '1d' });
-    const data = { ...omitHash(user.get()), token };
+async function getAll(type) {
     return {
         code: 200,
-        data: data,
-        message: 'Xác thực thành công'
-    }
-}
-
-async function getAll() {
-    return {
-        code: 200,
-        data: await db.Note.findAll({
+        data: await db.Category.findAll({
+            attributes: ['category_id', 'cate_name', 'cate_description'],
             order: [['createdAt', 'DESC']], // Order by createdAt in descending order
+            where: {cate_type: type}
           }),
         message: 'Request success'
     }
@@ -52,8 +32,13 @@ async function getById(id) {
 }
 
 async function create(params) {
-    await db.Note.create(params);
-    return params;
+    if (await db.Category.findOne({ where: { cate_name: params.cate_name, cate_type: params.cate_type, } })) {
+        throw 'Danh mục "' + params.cate_name + '" đã tồn tại';
+    }
+    params['category_id'] = uid.uid(16);
+    await db.Category.create(params);
+    const {user_created, cate_type,  ...data} = params;
+    return data;
 }
 
 async function update(id, params) {

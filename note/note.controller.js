@@ -5,10 +5,8 @@ const validateRequest = require('_middleware/validate-request');
 const authorize = require('_middleware/authorize')
 const noteService = require('./note.service');
 // routes
-router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/create', authorize(), createSchema, create);
 router.get('/', authorize(), getAll);
-router.get('/current', authorize(), getCurrent);
 router.get('/details/:note_id', authorize(), getDetailById);
 router.get('/category/:category_id', authorize(), getNoteByCategory);
 router.patch('/:id', authorize(), updateSchema, update);
@@ -16,23 +14,8 @@ router.delete('/:id', authorize(), _delete);
 
 module.exports = router;
 
-function authenticateSchema(req, res, next) {
-    const schema = Joi.object({
-        username: Joi.string().required(),
-        password: Joi.string().required()
-    });
-    validateRequest(req, next, schema);
-}
-
-function authenticate(req, res, next) {
-    noteService.authenticate(req.body)
-        .then(user => res.json(user))
-        .catch(next);
-}
-
 function createSchema(req, res, next) {
     const schema = Joi.object({
-        note_id: Joi.string().required(),
         content: Joi.string(),
         user_id: Joi.string().required(),
         category_id: Joi.string().required(),
@@ -53,14 +36,11 @@ function create(req, res, next) {
 }
 
 function getAll(req, res, next) {
-  console.log('vao day')
-    noteService.getAll()
-        .then(users => res.json(users))
+    const page = req.query.page || 1;
+    // const token = req.headers['authorization'].split(' ')[1];
+    noteService.getAll(page)
+        .then(notes => res.json(notes))
         .catch(next);
-}
-
-function getCurrent(req, res, next) {
-    res.json(req.user);
 }
 
 function getNoteByCategory(req, res, next) {
