@@ -21,7 +21,7 @@ function model(sequelize) {
         }
     };
     const Note = sequelize.define('Note', attributes, options);
-    db.User.hasMany(Note, { foreignKey: 'user_id', sourceKey: 'user_id' });
-    Note.belongsTo(db.User, { foreignKey: 'user_id', targetKey: 'user_id' });
+    // db.User.hasMany(Note, { foreignKey: 'user_id', sourceKey: 'user_id' });
+    // Note.belongsTo(db.User, { foreignKey: 'user_id', targetKey: 'user_id' });
     return Note;
 }

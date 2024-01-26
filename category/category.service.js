@@ -1,9 +1,6 @@
-const config = require('config.json');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
 const uid = require('uid');
-const { cloneDeep } = require('lodash');
 module.exports = {
     getAll,
     getById,
@@ -16,6 +13,7 @@ async function getAll(type) {
     return {
         code: 200,
         data: await db.Category.findAll({
+            attributes: ['category_id', 'cate_name', 'cate_description'],
             order: [['createdAt', 'DESC']], // Order by createdAt in descending order
             where: {cate_type: type}
           }),
@@ -37,8 +35,10 @@ async function create(params) {
     if (await db.Category.findOne({ where: { cate_name: params.cate_name, cate_type: params.cate_type, } })) {
         throw 'Danh mục "' + params.cate_name + '" đã tồn tại';
     }
+    params['category_id'] = uid.uid(16);
     await db.Category.create(params);
-    return params;
+    const {user_created, cate_type,  ...data} = params;
+    return data;
 }
 
 async function update(id, params) {

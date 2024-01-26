@@ -1,6 +1,5 @@
 const db = require('_helpers/db');
-const jwt = require('jsonwebtoken');
-const { secret } = require('config.json');
+const uid = require('uid');
 
 module.exports = {
     getAll,
@@ -64,6 +63,7 @@ async function getNoteByCategory(id){
 }
 
 async function create(params) {
+    params['note_id'] = uid.uid(16);
     await db.Note.create(params);
     return params;
 }

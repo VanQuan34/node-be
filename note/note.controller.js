@@ -16,7 +16,6 @@ module.exports = router;
 
 function createSchema(req, res, next) {
     const schema = Joi.object({
-        note_id: Joi.string().required(),
         content: Joi.string(),
         user_id: Joi.string().required(),
         category_id: Joi.string().required(),
