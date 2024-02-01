@@ -21,7 +21,7 @@ function model(sequelize) {
     };
 
     const Chat = sequelize.define('Chat', attributes, options);
-    db.User.hasMany(Chat, { foreignKey: 'user_id', sourceKey: 'user_id' });
-    Chat.belongsTo(db.User, { foreignKey: 'user_id', targetKey: 'user_id' });
+    // db.User.hasMany(Chat, { foreignKey: 'user_id', sourceKey: 'user_id' });
+    // Chat.belongsTo(db.User, { foreignKey: 'user_id', targetKey: 'user_id' });
     return Chat;
 }
