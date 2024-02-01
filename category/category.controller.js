@@ -7,8 +7,8 @@ const cateService = require('./category.service');
 // routes
 router.post('/create', authorize(), createSchema, create);
 router.get('/:type', authorize(), getAll);
-router.put('/:id', authorize(), updateSchema, update);
-router.delete('/:id', authorize(), _delete);
+router.patch('/:type/:id', authorize(), updateSchema, update);
+router.delete('/:type/:id', authorize(), _delete);
 
 module.exports = router;
 
@@ -17,7 +17,6 @@ function createSchema(req, res, next) {
     const schema = Joi.object({
         cate_name: Joi.string(),
         cate_description: Joi.string(),
-        user_created: Joi.string().required(),
         cate_type: Joi.string().required(),
     });
     validateRequest(req, next, schema);
@@ -44,19 +43,16 @@ function getAll(req, res, next) {
 
 function updateSchema(req, res, next) {
     const schema = Joi.object({
-        firstName: Joi.string().empty(''),
-        lastName: Joi.string().empty(''),
-        username: Joi.string().empty(''),
-        password: Joi.string().min(6).empty('')
+        cate_name: Joi.string().empty(''),
     });
     validateRequest(req, next, schema);
 }
 
 function update(req, res, next) {
-    cateService.update(req.params.id, req.body)
-        .then(user => res.json({
+    cateService.update(req.params.id, req.params.type, req.body)
+        .then(category => res.json({
                 code: 200,
-                data: user,
+                data: category,
                 message: 'Update successful'
             })
             )
@@ -64,7 +60,7 @@ function update(req, res, next) {
 }
 
 function _delete(req, res, next) {
-    cateService.delete(req.params.id)
-        .then(() => res.json({ message: 'User deleted successfully' }))
+    cateService.delete(req.params.id, req.params.type )
+        .then(() => res.json({ code: 200, message: 'Category deleted successfully' }))
         .catch(next);
 }

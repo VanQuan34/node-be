@@ -10,25 +10,29 @@ module.exports = {
 };
 
 async function getAll(type) {
+    let response = await db.Category.findAll({
+        attributes: ['category_id', 'cate_name', 'cate_description', [db.sequelize.fn('COUNT', db.sequelize.col('Notes.note_id')), 'note_amount']],
+        include: [
+            {
+              model: db.Note,
+              attributes: [],
+              duplicating: false,
+            },
+          ],
+        group: ['Category.category_id'],
+        order: [['createdAt', 'DESC']], // Order by createdAt in descending order
+        where: { cate_type: type, user_created: globalThis.currentId}
+    });
+
     return {
         code: 200,
-        data: await db.Category.findAll({
-            attributes: ['category_id', 'cate_name', 'cate_description'],
-            order: [['createdAt', 'DESC']], // Order by createdAt in descending order
-            where: {cate_type: type}
-          }),
+        data: response,
         message: 'Request success'
     }
 }
 
-// {
-//     order: [['createdAt', 'DESC']], // Order by createdAt in descending order
-//     offset: 2,
-//     limit: 2,
-//   }
-
 async function getById(id) {
-    return await getNote(id);
+    return await getCategory(id);
 }
 
 async function create(params) {
@@ -36,41 +40,45 @@ async function create(params) {
         throw 'Danh mục "' + params.cate_name + '" đã tồn tại';
     }
     params['category_id'] = uid.uid(16);
+    params['user_created'] = globalThis.currentId;
     await db.Category.create(params);
     const {user_created, cate_type,  ...data} = params;
     return data;
 }
 
-async function update(id, params) {
-    const user = await getNote(id);
-
+async function update(id, type,  params) {
+    const category = await getCategory(id);
     // validate
-    const usernameChanged = params.username && user.username !== params.username;
-    if (usernameChanged && await db.User.findOne({ where: { username: params.username } })) {
-        throw 'Username "' + params.username + '" is already taken';
-    }
-
-    // hash password if it was entered
-    if (params.password) {
-        params.hash = await bcrypt.hash(params.password, 10);
+    if (await db.Category.findOne({ where: { cate_name: params.cate_name, cate_type: type } })) {
+        throw 'Category "' + params.cate_name + '" is already taken';
     }
 
     // copy params to user and save
-    Object.assign(user, params);
-    await user.save();
+    Object.assign(category, params);
+    await category.save();
 
-    return omitHash(user.get());
+    return category.get();
 }
 
-async function _delete(id) {
-    const user = await getNote(id);
-    await user.destroy();
+async function _delete(id, type) {
+    const record =  await getNoteByCategory(id);
+    if(record.data.length){
+        throw 'Không thể xóa do danh mục có bản ghi';
+    }
+    const category = await getCategory(id);
+    await category.destroy();
 }
 
 // helper functions
 
-async function getNote(id) {
+async function getCategory(id) {
     // const note = await db.User.findByPk(id);
+    const category = await db.Category.findOne({ where: { category_id: id } });
+    if (!category) throw 'Note not found';
+    return category;
+}
+
+async function getNoteByCategory(id){
     const note = await db.Note.findAll({ where: { category_id: id } });
     if (!note){
       return {
@@ -84,9 +92,4 @@ async function getNote(id) {
       data: note,
       message: 'Request success'
     }
-}
-
-function omitHash(user) {
-    const { hash, ...userWithoutHash } = user;
-    return userWithoutHash;
 }

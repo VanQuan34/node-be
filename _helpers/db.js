@@ -27,6 +27,7 @@ async function initialize() {
         });
 
     // // init models and add them to the exported db object
+    db.sequelize = sequelize;
     db.User = require('../users/user.model')(sequelize);
     db.Chat = require('../chat/chat.model')(sequelize);
     db.Note = require('../note/note.model')(sequelize);

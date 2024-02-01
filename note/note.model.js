@@ -5,6 +5,8 @@ module.exports = model;
 function model(sequelize) {
     const attributes = {
         note_id: { type: DataTypes.STRING, allowNull: false },
+        title: { type: DataTypes.STRING, allowNull: false },
+        description: { type: DataTypes.STRING, allowNull: true },
         content: { type: DataTypes.TEXT, allowNull: true },
         category_id: { type: DataTypes.STRING, allowNull: false },
         user_id: { type: DataTypes.STRING, allowNull: false },

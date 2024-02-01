@@ -6,6 +6,7 @@ const authorize = require('_middleware/authorize')
 const noteService = require('./note.service');
 // routes
 router.post('/create', authorize(), createSchema, create);
+router.post('/duplicate', authorize(), duplicateSchema, duplicate);
 router.get('/', authorize(), getAll);
 router.get('/details/:note_id', authorize(), getDetailById);
 router.get('/category/:category_id', authorize(), getNoteByCategory);
@@ -16,14 +17,24 @@ module.exports = router;
 
 function createSchema(req, res, next) {
     const schema = Joi.object({
-        content: Joi.string(),
-        user_id: Joi.string().required(),
+        title: Joi.string().required(),
+        description: Joi.string(),
+        category_id: Joi.string().required(),
+    });
+    validateRequest(req, next, schema);
+}
+
+function duplicateSchema(req, res, next){
+    const schema = Joi.object({
+        title: Joi.string().required(),
+        note_id: Joi.string().required(),
         category_id: Joi.string().required(),
     });
     validateRequest(req, next, schema);
 }
 
 function create(req, res, next) {
+    req.body['user_id'] = globalThis.currentId;
     noteService.create(req.body)
         .then((data) => res.json(
             {
@@ -35,17 +46,30 @@ function create(req, res, next) {
         .catch(next);
 }
 
+function duplicate(req, res, next) {
+    req.body['user_id'] = globalThis.currentId;
+    noteService.duplicate(req.body)
+        .then((data) => res.json(
+            {
+                code: 200,
+                data: data,
+                message: 'Created duplicate note successful'
+            }
+            ))
+        .catch(next);
+}
+
 function getAll(req, res, next) {
-    const page = req.query.page || 1;
+    const query = req.query
     // const token = req.headers['authorization'].split(' ')[1];
-    noteService.getAll(page)
+    noteService.getAll(query)
         .then(notes => res.json(notes))
         .catch(next);
 }
 
 function getNoteByCategory(req, res, next) {
   console.log('req.params.category_id=', req.params.category_id);
-    noteService.getNoteByCategory(req.params.category_id)
+    noteService.getNoteByCategory(req.params.category_id, req.query)
         .then(note => res.json(note))
         .catch(next);
 }
@@ -59,12 +83,14 @@ function getDetailById(req, res, next){
 function updateSchema(req, res, next) {
     const schema = Joi.object({
         content: Joi.string(),
+        title: Joi.string(),
+        description: Joi.string(),
     });
     validateRequest(req, next, schema);
 }
 
 function update(req, res, next) {
-    noteService.update(req.params.id, req.body.content)
+    noteService.update(req.params.id, req.body)
         .then(note => res.json({
                 code: 200,
                 data: note,
