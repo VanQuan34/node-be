@@ -32,6 +32,7 @@ async function initialize() {
     db.Chat = require('../chat/chat.model')(sequelize);
     db.Note = require('../note/note.model')(sequelize);
     db.Category = require('../category/category.model')(sequelize);
+    db.Image = require('../image/image.model')(sequelize);
 
     // sync all models with database
     await sequelize.sync();

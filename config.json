@@ -1,9 +1,9 @@
 ﻿{
     "database": {
-        "host": "mysql-20a2d0ac-tavananhquan96-fb1d.a.aivencloud.com",
-        "port": 15756,
-        "user": "avnadmin",
-        "password": "AVNS_uQkwoZ_Jy0WX22Vdg3s",
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "",
         "database": "be-sql"
     },
     "secret": "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING"

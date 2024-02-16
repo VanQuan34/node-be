@@ -1,0 +1,11 @@
+{
+  "MAILER": "smtp",
+  "HOST": "smtp.gmail.com",
+  "PORT": 587,
+  "USERNAME": "tavananhquan96@gmail.com",
+  "PASSWORD": "ehue siqx sguv zkhq",
+  "ENCRYPTION": "TLS",
+  "FROM_ADDRESS": "tavananhquan96@gmail.com",
+  "FROM_NAME": "RESET PASSWORD",
+  "SITE_URL": "http://localhost:4200/"
+}

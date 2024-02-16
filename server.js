@@ -14,6 +14,7 @@ app.use('/users', require('./users/users.controller'));
 app.use('/chats', require('./chat/chat.controller'));
 app.use('/notes', require('./note/note.controller'));
 app.use('/category', require('./category/category.controller'));
+app.use('/image', require('./image/image.controller'));
 
 // global error handler
 app.use(errorHandler);
