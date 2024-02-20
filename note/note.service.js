@@ -61,6 +61,9 @@ async function getNoteByCategory(id, query){
   }
   const note = await db.Note.findAll({
     attributes: ['note_id', 'title', 'description', 'category_id', 'user_id', 'createdAt'],
+    order: [
+      ['createdAt', 'DESC'] // Order by the specified column and direction
+    ],
     where: where
   });
 

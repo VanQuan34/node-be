@@ -20,6 +20,7 @@ function createSchema(req, res, next) {
         title: Joi.string().required(),
         description: Joi.string(),
         category_id: Joi.string().required(),
+        content: Joi.string(),
     });
     validateRequest(req, next, schema);
 }
